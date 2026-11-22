@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/adityaarora/envguardian/main/schema.json",
+  "title": "EnvGuardian configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "files": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "schema": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/field" }
+    },
+    "scan": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "secrets": { "type": "boolean" },
+        "gitSafety": { "type": "boolean" },
+        "frameworkSafety": { "type": "boolean" },
+        "minEntropy": { "type": "number", "minimum": 0 },
+        "excludePlaceholders": { "type": "boolean" },
+        "customRules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "name", "pattern"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "name": { "type": "string", "minLength": 1 },
+              "pattern": { "type": "string", "minLength": 1 },
+              "severity": { "enum": ["error", "warning", "info"] },
+              "confidence": { "enum": ["HIGH", "MEDIUM", "LOW"] },
+              "remediation": { "type": "string" },
+              "entropyThreshold": { "type": "number", "minimum": 0 }
+            }
+          }
+        }
+      }
+    },
+    "ignore": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "strict": { "type": "boolean" },
+    "format": { "enum": ["text", "json", "sarif"] },
+    "output": { "type": "string" }
+  },
+  "$defs": {
+    "field": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "enum": [
+            "string",
+            "number",
+            "boolean",
+            "url",
+            "email",
+            "integer",
+            "enum",
+            "json",
+            "port",
+            "nonempty_string"
+          ]
+        },
+        "required": { "type": "boolean" },
+        "default": true,
+        "minLength": { "type": "integer", "minimum": 0 },
+        "maxLength": { "type": "integer", "minimum": 0 },
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "regex": { "type": "string" },
+        "values": {
+          "type": "array",
+          "items": { "type": ["string", "number"] },
+          "minItems": 1
+        },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}
